@@ -131,12 +131,6 @@ func (s *Server) Process(ctx context.Context, network net.Network, conn stat.Con
 	if firstLen < 58 || first.Byte(56) != '\r' {
 		// invalid protocol
 		err = errors.New("not trojan protocol")
-		log.Record(&log.AccessMessage{
-			From:   conn.RemoteAddr(),
-			To:     "",
-			Status: log.AccessRejected,
-			Reason: err,
-		})
 
 		shouldFallback = true
 	} else {
@@ -144,12 +138,6 @@ func (s *Server) Process(ctx context.Context, network net.Network, conn stat.Con
 		if user == nil {
 			// invalid user, let's fallback
 			err = errors.New("not a valid user")
-			log.Record(&log.AccessMessage{
-				From:   conn.RemoteAddr(),
-				To:     "",
-				Status: log.AccessRejected,
-				Reason: err,
-			})
 
 			shouldFallback = true
 		}
@@ -158,6 +146,12 @@ func (s *Server) Process(ctx context.Context, network net.Network, conn stat.Con
 	if isfb && shouldFallback {
 		return s.fallback.Process(ctx, err, sessionPolicy, conn, iConn, first, firstLen, bufferedReader)
 	} else if shouldFallback {
+		log.Record(&log.AccessMessage{
+			From:   conn.RemoteAddr(),
+			To:     "",
+			Status: log.AccessRejected,
+			Reason: err,
+		})
 		return errors.New("invalid protocol or invalid user")
 	}
 
