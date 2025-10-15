@@ -50,5 +50,5 @@ func (x *StaticHttpResponse) WriteToClient(request *http.Request, writer io.Writ
 
 func (x *StaticHttpResponse) WriteToServer(request *http.Request, writer buf.Writer) (int, error) {
 	b := x.toBuf()
-	return len(b), writer.WriteMultiBuffer(buf.MultiBuffer{buf.NewExisted(b)})
+	return len(b), writer.WriteMultiBuffer(buf.MultiBuffer{buf.FromBytes(b)})
 }
