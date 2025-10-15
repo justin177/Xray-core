@@ -21,6 +21,7 @@ import (
 
 var (
 	inboundConfigLoader = NewJSONConfigLoader(ConfigCreatorCache{
+		"echo":          func() interface{} { return new(EchoServerConfig) },
 		"tunnel":        func() interface{} { return new(DokodemoConfig) },
 		"dokodemo-door": func() interface{} { return new(DokodemoConfig) },
 		"http":          func() interface{} { return new(HTTPServerConfig) },
@@ -34,6 +35,7 @@ var (
 	}, "protocol", "settings")
 
 	outboundConfigLoader = NewJSONConfigLoader(ConfigCreatorCache{
+		"echo":        func() interface{} { return new(EchoClientConfig) },
 		"block":       func() interface{} { return new(BlackholeConfig) },
 		"blackhole":   func() interface{} { return new(BlackholeConfig) },
 		"loopback":    func() interface{} { return new(LoopbackConfig) },

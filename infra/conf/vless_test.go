@@ -105,7 +105,7 @@ func TestVLessInbound(t *testing.T) {
 					},
 				},
 				Decryption: "none",
-				Fallbacks: []*inbound.Fallback{
+				Fallbacks: []*protocol.Fallback{
 					{
 						Alpn: "",
 						Path: "",

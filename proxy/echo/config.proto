@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package xray.proxy.echo;
+option csharp_namespace = "Xray.Proxy.Echo";
+option go_package = "github.com/xtls/xray-core/proxy/echo";
+option java_package = "com.xray.proxy.echo";
+option java_multiple_files = true;
+
+import "common/serial/typed_message.proto";
+
+message ClientConfig {
+  xray.common.serial.TypedMessage response = 1;
+}
+
+message ServerConfig {
+  xray.common.serial.TypedMessage response = 1;
+}
+
+message StaticHttpResponse {
+  string version = 1;
+  string status = 2;
+  string reason = 3;
+  map<string, string> headers = 4;
+  string body = 5;
+}
+
+message GetHttpResponse {
+  string targetUrl = 1;
+  map<string, string> headers = 2;
+}
