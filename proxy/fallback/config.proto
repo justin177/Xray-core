@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package xray.proxy.fallback;
+option csharp_namespace = "Xray.Proxy.fallback";
+option go_package = "github.com/xtls/xray-core/proxy/fallback";
+option java_package = "com.xray.proxy.fallback";
+option java_multiple_files = true;
+
+import "common/protocol/fallback.proto";
+
+message Config {
+  repeated xray.common.protocol.Fallback fallbacks = 1;
+}

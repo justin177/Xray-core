@@ -72,6 +72,8 @@ type VMessInboundConfig struct {
 	Users        []json.RawMessage   `json:"clients"`
 	Defaults     *VMessDefaultConfig `json:"default"`
 	DetourConfig *VMessDetourConfig  `json:"detour"`
+
+	Fallbacks []*InboundFallback `json:"fallbacks"`
 }
 
 // Build implements Buildable
@@ -105,6 +107,12 @@ func (c *VMessInboundConfig) Build() (proto.Message, error) {
 
 		user.Account = serial.ToTypedMessage(account.Build())
 		config.User[idx] = user
+	}
+
+	if v, err := buildFallbacks("VMess", c.Fallbacks); err != nil {
+		return nil, err
+	} else {
+		config.Fallbacks = v
 	}
 
 	return config, nil

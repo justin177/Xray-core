@@ -6,6 +6,7 @@ option go_package = "github.com/xtls/xray-core/proxy/vmess/inbound";
 option java_package = "com.xray.proxy.vmess.inbound";
 option java_multiple_files = true;
 
+import "common/protocol/fallback.proto";
 import "common/protocol/user.proto";
 
 message DetourConfig {
@@ -21,4 +22,5 @@ message Config {
   DefaultConfig default = 2;
   DetourConfig detour = 3;
   // 4 is for legacy setting
+  repeated xray.common.protocol.Fallback fallbacks = 7;
 }

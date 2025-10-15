@@ -18,12 +18,14 @@ import (
 	"github.com/xtls/xray-core/common/task"
 	"github.com/xtls/xray-core/common/uuid"
 	"github.com/xtls/xray-core/core"
-	feature_inbound "github.com/xtls/xray-core/features/inbound"
 	"github.com/xtls/xray-core/features/policy"
 	"github.com/xtls/xray-core/features/routing"
+	"github.com/xtls/xray-core/proxy/fallback"
 	"github.com/xtls/xray-core/proxy/vmess"
 	"github.com/xtls/xray-core/proxy/vmess/encoding"
 	"github.com/xtls/xray-core/transport/internet/stat"
+
+	feature_inbound "github.com/xtls/xray-core/features/inbound"
 )
 
 type userByEmail struct {
@@ -108,6 +110,8 @@ type Handler struct {
 	usersByEmail          *userByEmail
 	detours               *DetourConfig
 	sessionHistory        *encoding.SessionHistory
+
+	fallback *fallback.Handler
 }
 
 // New creates a new VMess inbound handler.
@@ -133,6 +137,9 @@ func New(ctx context.Context, config *Config) (*Handler, error) {
 		}
 	}
 
+	if config.Fallbacks != nil {
+		handler.fallback = fallback.New(&fallback.Config{Fallbacks: config.Fallbacks})
+	}
 	return handler, nil
 }
 
@@ -240,10 +247,22 @@ func (h *Handler) Process(ctx context.Context, network net.Network, connection s
 		_, isDrain = iConn.(*net.UnixConn)
 	}
 
-	reader := &buf.BufferedReader{Reader: buf.NewReader(connection)}
+	isfb := h.fallback != nil
+
+	first := buf.FromBytes(make([]byte, buf.Size))
+	first.Clear()
+	firstLen, _ := first.ReadFrom(connection)
+	errors.LogInfo(ctx, "firstLen = ", firstLen)
+	firstBytes := first.Bytes()
+
+	reader := &buf.BufferedReader{Reader: buf.NewReader(connection), Buffer: buf.MultiBuffer{first}}
 	svrSession := encoding.NewServerSession(h.clients, h.sessionHistory)
 	request, err := svrSession.DecodeRequestHeader(reader, isDrain)
 	if err != nil {
+		if isfb {
+			reader = &buf.BufferedReader{Reader: buf.NewReader(connection), Buffer: buf.MultiBuffer{buf.FromBytes(firstBytes)}}
+			return h.fallback.Process(ctx, err, sessionPolicy, connection, iConn, first, firstLen, reader)
+		}
 		if errors.Cause(err) != io.EOF {
 			log.Record(&log.AccessMessage{
 				From:   connection.RemoteAddr(),

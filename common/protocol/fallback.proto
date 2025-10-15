@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package xray.common.protocol;
+option csharp_namespace = "Xray.Common.Protocol";
+option go_package = "github.com/xtls/xray-core/common/protocol";
+option java_package = "com.xray.common.protocol";
+option java_multiple_files = true;
+
+message Fallback {
+  string name = 1;
+  string alpn = 2;
+  string path = 3;
+  string type = 4;
+  string dest = 5;
+  uint64 xver = 6;
+
+  // Exact / Prefix / Regexp
+  PathType path_type = 31;
+}
+
+enum PathType {
+  Exact = 0;
+  Prefix = 1;
+  Regexp = 2;
+}
