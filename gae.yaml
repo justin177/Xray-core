@@ -1,0 +1,6 @@
+runtime: go123
+instance_class: F1
+
+main: ./main
+env_variables:
+  XRAY_VMESS_AEAD_FORCED: "false"

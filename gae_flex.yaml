@@ -1,0 +1,32 @@
+runtime: go
+env: flex
+
+runtime_config:
+  operating_system: 'ubuntu22'
+  runtime_version: '1.23'
+  main: ./main
+
+manual_scaling:
+  instances: 1
+resources:
+  cpu: 1
+  memory_gb: 0.5
+  disk_size_gb: 10
+
+main: ./main
+env_variables:
+  XRAY_VMESS_AEAD_FORCED: "false"
+
+liveness_check:
+  path: "/liveness_check"
+  check_interval_sec: 30
+  timeout_sec: 4
+  failure_threshold: 2
+  success_threshold: 2
+readiness_check:
+  path: "/readiness_check"
+  check_interval_sec: 5
+  timeout_sec: 4
+  failure_threshold: 2
+  success_threshold: 2
+  app_start_timeout_sec: 300

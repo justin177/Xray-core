@@ -46,3 +46,4 @@ errorgen
 *.key
 
 .leancloud
+.run
