@@ -2,6 +2,7 @@ package external
 
 import (
 	"bytes"
+	"crypto/tls"
 	"io"
 	"net/http"
 	"net/url"
@@ -47,6 +48,12 @@ func FetchHTTPContent(target string) ([]byte, error) {
 
 	client := &http.Client{
 		Timeout: 30 * time.Second,
+		Transport: &http.Transport{
+			DisableKeepAlives: true,
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		},
 	}
 	resp, err := client.Do(&http.Request{
 		Method: "GET",
