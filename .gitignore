@@ -44,3 +44,5 @@ errorgen
 # Certificates
 *.crt
 *.key
+
+.leancloud
