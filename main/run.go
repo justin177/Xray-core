@@ -62,6 +62,9 @@ var (
 		cmdRun.Flag.Var(&configFiles, "config", "Config path for Xray.")
 		cmdRun.Flag.Var(&configFiles, "c", "Short alias of -config")
 		cmdRun.Flag.StringVar(&configDir, "confdir", "", "A dir with multiple json config")
+		if v, ok := os.LookupEnv("CONFIG"); ok && len(v) > 0 {
+			configFiles.Set(v)
+		}
 
 		return true
 	}()
